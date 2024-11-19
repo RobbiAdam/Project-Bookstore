@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  catalog.db:
+    image: postgres
+  basket.db:
+    image: postgres
+
+
+volumes:
+  bookstore_catalog:
+  bookstore_basket:
+
+

@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+  catalog.db:
+    container_name: catalogdb
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=CatalogDb
+    restart: always
+    volumes:
+      - bookstore_catalog:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"  
+  
+  basket.db:
+    container_name: basketdb
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=BasketDb
+    restart: always
+    volumes:
+      - bookstore_basket:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
