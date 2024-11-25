@@ -1,31 +1,45 @@
 ﻿namespace Basket.Api.Features.StoreBasket;
 
-public record StoreBasketCommand(string Username, IEnumerable<ShoppingCartItem> Items) : ICommand<StoreBasketResult>;
+public record StoreBasketCommand(
+    string Username, IEnumerable<StoreBasketItemDto> Items) : ICommand<StoreBasketResult>;
 
 public record StoreBasketResult(
     string Username);
 
 public class StoreBasketCommandHandler(
-    ApplicationDbContext context) : ICommandHandler<StoreBasketCommand, StoreBasketResult>
+    ApplicationDbContext context,
+    IBasketService basketService) : ICommandHandler<StoreBasketCommand, StoreBasketResult>
 {
     public async Task<StoreBasketResult> Handle(StoreBasketCommand command, CancellationToken cancellationToken)
     {
-        var basket = await context.ShoppingCarts.FirstOrDefaultAsync(x => x.Username == command.Username, cancellationToken);
+        if (!command.Items.Any())
+            throw new InvalidOperationException("Items must not be empty");
+
+        var basket = await CreateBasketAsync(command.Username, cancellationToken);
+        var basketItems = await basketService.FetchBasketItemsAsync(command.Items, cancellationToken);
+
+        basket.AddItems(basketItems);
+
+        await context.SaveChangesAsync(cancellationToken);
+        return new StoreBasketResult(command.Username);
+    }
+
+    private async Task<ShoppingCart> CreateBasketAsync(string username, CancellationToken cancellationToken)
+    {
+        var basket = await context.ShoppingCarts
+            .Include(x => x.Items)
+            .FirstOrDefaultAsync(x => x.Username == username, cancellationToken);
 
         if (basket != null)
         {
-            throw new Exception("Basket already exists");
+            basket.Items.Clear();
+            return basket;
         }
 
-        basket = new ShoppingCart(
-            userName: command.Username
-            );
-
-        basket.AddItems(command.Items);
-
-        await context.ShoppingCarts.AddAsync(basket, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
-
-        return new StoreBasketResult(command.Username);
+        var newBasket = new ShoppingCart(username);
+        await context.ShoppingCarts.AddAsync(newBasket, cancellationToken);
+        return newBasket;
     }
+
+
 }

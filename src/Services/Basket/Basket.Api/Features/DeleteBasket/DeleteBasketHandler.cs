@@ -9,11 +9,12 @@ public class DeleteBasketCommandHandler(
     public async Task<DeleteBasketResult> Handle(DeleteBasketCommand request, CancellationToken cancellationToken)
     {
         var basket = await context.ShoppingCarts.Where(b => b.Username == request.Username).FirstOrDefaultAsync(cancellationToken);
-        if (basket is not null)
-        {
-            context.ShoppingCarts.Remove(basket);
-            await context.SaveChangesAsync(cancellationToken);
-        }
+
+        if (basket is null)
+            return new DeleteBasketResult(false);
+
+        context.ShoppingCarts.Remove(basket);
+        await context.SaveChangesAsync(cancellationToken);
         return new DeleteBasketResult(true);
     }
 }

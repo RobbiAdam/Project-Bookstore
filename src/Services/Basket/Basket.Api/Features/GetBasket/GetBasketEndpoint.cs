@@ -1,6 +1,4 @@
-﻿using Basket.Api.Dtos;
-
-namespace Basket.Api.Features.GetBasket;
+﻿namespace Basket.Api.Features.GetBasket;
 
 public record GetBasketResponse(ShoppingCartDto Basket);
 public class GetBasketEndpoint : ICarterModule

@@ -1,4 +1,7 @@
-﻿namespace Basket.Api;
+﻿using BuildingBlocks.Messaging.MassTransit;
+using System.Reflection;
+
+namespace Basket.Api;
 
 public static class DependencyInjection
 {
@@ -7,7 +10,9 @@ public static class DependencyInjection
         return services
             .AddCarter()
             .AddMediator()
-            .AddDatabase(configuration);
+            .AddDatabase(configuration)
+            .AddMessageBroker(configuration, Assembly.GetExecutingAssembly())
+            .AddServices();
     }
 
     private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
@@ -23,6 +28,12 @@ public static class DependencyInjection
             {
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
             });
+    }
+
+    private static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        return services
+            .AddScoped<IBasketService, BasketService>();
     }
 
     public static WebApplication UseBasketApi(this WebApplication app)

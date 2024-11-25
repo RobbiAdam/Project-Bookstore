@@ -5,6 +5,8 @@ services:
     image: postgres
   basket.db:
     image: postgres
+  messagebroker:
+    image: rabbitmq:management
 
 
 volumes:

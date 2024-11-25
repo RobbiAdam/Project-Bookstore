@@ -1,6 +1,4 @@
-﻿using Basket.Api.Dtos;
-
-namespace Basket.Api.Features.GetBasket;
+﻿namespace Basket.Api.Features.GetBasket;
 
 public record GetBasketQuery(string Username) : IQuery<GetBasketResult>;
 public record GetBasketResult(ShoppingCartDto Basket);
@@ -16,9 +14,7 @@ public class GetBasketQueryHandler(
             .FirstOrDefaultAsync(x => x.Username == query.Username, cancellationToken);
 
         if (basket is null)
-        {
-            throw new Exception("Basket with username " + query.Username + " not found");
-        }
+            throw new Exception($"Basket with username {query.Username} not found");
 
         var basketDto = basket.Adapt<ShoppingCartDto>();
         return new GetBasketResult(basketDto);

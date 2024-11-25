@@ -1,4 +1,7 @@
-﻿namespace Catalog.Api;
+﻿using BuildingBlocks.Messaging.MassTransit;
+using System.Reflection;
+
+namespace Catalog.Api;
 
 public static class DependencyInjection
 {
@@ -7,7 +10,8 @@ public static class DependencyInjection
         return services
             .AddCarter()
             .AddMediator()
-            .AddDatabase(configuration);
+            .AddDatabase(configuration)
+            .AddMessageBroker(configuration, Assembly.GetExecutingAssembly());
 
     }
 

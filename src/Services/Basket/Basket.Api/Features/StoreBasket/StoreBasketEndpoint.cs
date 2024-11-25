@@ -1,9 +1,7 @@
 ﻿namespace Basket.Api.Features.StoreBasket;
 
-public record StoreBasketRequest(string Username, IEnumerable<ShoppingCartItem> Items);
+public record StoreBasketRequest(string Username, IEnumerable<StoreBasketItemDto> Items);
 public record StoreBasketResponse(string Username);
-
-
 
 public class StoreBasketEndpoint : ICarterModule
 {

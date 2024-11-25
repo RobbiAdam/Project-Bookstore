@@ -25,3 +25,15 @@ services:
     ports:
       - "5433:5432"
 
+  messagebroker:
+    container_name: bookstoremessagebroker
+    hostname: bookstore-mq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    
+
