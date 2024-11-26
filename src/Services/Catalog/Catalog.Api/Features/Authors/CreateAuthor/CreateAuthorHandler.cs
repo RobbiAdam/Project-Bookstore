@@ -6,6 +6,14 @@ public record CreateAuthorCommand(
 public record CreateAuthorResult(
     Guid Id);
 
+public class CreateAuthorCommandValidator : AbstractValidator<CreateAuthorCommand>
+{
+    public CreateAuthorCommandValidator()
+    {
+        RuleFor(x => x.Name).NotEmpty().WithMessage("Author name is required");
+    }
+}
+
 public class CreateAuthorCommandHandler(
     ApplicationDbContext context) : ICommandHandler<CreateAuthorCommand, CreateAuthorResult>
 {

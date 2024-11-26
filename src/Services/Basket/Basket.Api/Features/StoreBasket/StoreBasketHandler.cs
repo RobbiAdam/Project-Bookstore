@@ -6,6 +6,15 @@ public record StoreBasketCommand(
 public record StoreBasketResult(
     string Username);
 
+public class StoreBasketCommandValidator : AbstractValidator<StoreBasketCommand>
+{
+    public StoreBasketCommandValidator()
+    {
+        RuleFor(x => x.Username).NotEmpty().WithMessage("Username must not be empty");
+        RuleFor(x => x.Items).NotEmpty().WithMessage("Items must not be empty");
+    }
+}
+
 public class StoreBasketCommandHandler(
     ApplicationDbContext context,
     IBasketService basketService) : ICommandHandler<StoreBasketCommand, StoreBasketResult>

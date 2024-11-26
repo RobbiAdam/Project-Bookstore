@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Messaging.MassTransit;
+﻿using BuildingBlocks.Behaviors;
+using BuildingBlocks.Messaging.MassTransit;
 using System.Reflection;
 
 namespace Catalog.Api;
@@ -27,8 +28,11 @@ public static class DependencyInjection
             .AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-            });
+                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            })
+        .AddValidatorsFromAssembly(typeof(Program).Assembly);
     }
+
 
     public static WebApplication UseCatalogApi(this WebApplication app)
     {

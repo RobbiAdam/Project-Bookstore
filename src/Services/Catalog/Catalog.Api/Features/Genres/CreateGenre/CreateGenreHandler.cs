@@ -4,6 +4,14 @@ public record CreateGenreCommand(string Name) : ICommand<CreateGenreResult>;
 
 public record CreateGenreResult(Guid Id);
 
+public class CreateGenreCommandValidator : AbstractValidator<CreateGenreCommand>
+{
+    public CreateGenreCommandValidator()
+    {
+        RuleFor(x => x.Name).NotEmpty().WithMessage("Genre name is required.");
+    }
+}
+
 public class CreateGenreCommandHandler(
     ApplicationDbContext context) : ICommandHandler<CreateGenreCommand, CreateGenreResult>
 {

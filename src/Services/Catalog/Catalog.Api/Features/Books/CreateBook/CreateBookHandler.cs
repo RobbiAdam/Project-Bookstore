@@ -11,6 +11,21 @@ public record CreateBookCommand(
 public record CreateBookResult(
     Guid Id);
 
+public class CreateBookCommandValidator : AbstractValidator<CreateBookCommand>
+{
+    public CreateBookCommandValidator()
+    {
+        RuleFor(x => x.Title).NotEmpty().WithMessage("Title is required");
+        RuleFor(x => x.Description).NotEmpty().WithMessage("Description is required");
+
+        RuleFor(x => x.Price).NotEmpty().WithMessage("Price is required");
+        RuleFor(x => x.Price).Must(x => x > 0).WithMessage("Price must be greater than 0");
+
+        RuleFor(x => x.AuthorsIds).NotEmpty().WithMessage("Authors is required");
+        RuleFor(x => x.GenresIds).NotEmpty().WithMessage("Genres is required");
+    }
+}
+
 internal class CreateBookCommandHandler(
     ApplicationDbContext context) : ICommandHandler<CreateBookCommand, CreateBookResult>
 {

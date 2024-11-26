@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Messaging.MassTransit;
+﻿using BuildingBlocks.Behaviors;
+using BuildingBlocks.Messaging.MassTransit;
 using System.Reflection;
 
 namespace Basket.Api;
@@ -27,7 +28,9 @@ public static class DependencyInjection
             .AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-            });
+                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            })
+        .AddValidatorsFromAssembly(typeof(Program).Assembly);
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services)

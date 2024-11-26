@@ -6,7 +6,14 @@ public record UpdateBasketItemsCommand(
 public record UpdateBasketItemsResult(
     bool Success, string Message);
 
-
+public class UpdateBasketItemsCommandValidator : AbstractValidator<UpdateBasketItemsCommand>
+{
+    public UpdateBasketItemsCommandValidator()
+    {
+        RuleFor(x => x.Username).NotEmpty().WithMessage("Username is required");
+        RuleFor(x => x.Items).NotEmpty().WithMessage("Items are required");
+    }
+}
 public class UpdateBasketItemsCommandHandler(
     ApplicationDbContext context,
     IBasketService basketService) : ICommandHandler<UpdateBasketItemsCommand, UpdateBasketItemsResult>

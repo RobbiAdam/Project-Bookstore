@@ -9,6 +9,21 @@ public record UpdateBookCommand(
 
 public record UpdateBookResult(bool Success);
 
+public class UpdateBookCommandValidator : AbstractValidator<UpdateBookCommand>
+{
+    public UpdateBookCommandValidator()
+    {
+        RuleFor(x => x.Title).NotEmpty().WithMessage("Title is required");
+        RuleFor(x => x.Description).NotEmpty().WithMessage("Description is required");
+
+        RuleFor(x => x.Price).NotEmpty().WithMessage("Price is required");
+        RuleFor(x => x.Price).Must(x => x > 0).WithMessage("Price must be greater than 0");
+
+        RuleFor(x => x.AuthorsIds).NotEmpty().WithMessage("Authors is required");
+        RuleFor(x => x.GenresIds).NotEmpty().WithMessage("Genres is required");
+    }
+}
+
 public class UpdateBookCommandHandler(
     ApplicationDbContext context) : ICommandHandler<UpdateBookCommand, UpdateBookResult>
 {
