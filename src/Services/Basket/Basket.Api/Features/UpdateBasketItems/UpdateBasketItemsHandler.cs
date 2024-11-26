@@ -1,31 +1,31 @@
 ﻿namespace Basket.Api.Features.UpdateBasket;
 
-public record UpdateBasketCommand(
-    string Username, IEnumerable<StoreBasketItemDto> Items) : ICommand<UpdateBasketResult>;
+public record UpdateBasketItemsCommand(
+    string Username, IEnumerable<StoreBasketItemDto> Items) : ICommand<UpdateBasketItemsResult>;
 
-public record UpdateBasketResult(
+public record UpdateBasketItemsResult(
     bool Success, string Message);
 
 
-public class UpdateBasketCommandHandler(
+public class UpdateBasketItemsCommandHandler(
     ApplicationDbContext context,
-    IBasketService basketService) : ICommandHandler<UpdateBasketCommand, UpdateBasketResult>
+    IBasketService basketService) : ICommandHandler<UpdateBasketItemsCommand, UpdateBasketItemsResult>
 {
-    public async Task<UpdateBasketResult> Handle(UpdateBasketCommand command, CancellationToken cancellationToken)
+    public async Task<UpdateBasketItemsResult> Handle(UpdateBasketItemsCommand command, CancellationToken cancellationToken)
     {
         var basket = await context.ShoppingCarts
             .Include(x => x.Items)
             .FirstOrDefaultAsync(x => x.Username == command.Username, cancellationToken);
 
         if (basket is null)
-            return new UpdateBasketResult(false, $"Basket for {command.Username} does not exist");
+            return new UpdateBasketItemsResult(false, $"Basket for {command.Username} does not exist");
 
         var basketItems = await basketService.FetchBasketItemsAsync(command.Items, cancellationToken);
 
         UpdateBasketItems(basket, basketItems);
 
         await context.SaveChangesAsync(cancellationToken);
-        return new UpdateBasketResult(true, $"Basket for {command.Username} has been updated");
+        return new UpdateBasketItemsResult(true, $"Basket for {command.Username} has been updated");
     }
 
     private void UpdateBasketItems(ShoppingCart basket, IEnumerable<ShoppingCartItem> basketItems)

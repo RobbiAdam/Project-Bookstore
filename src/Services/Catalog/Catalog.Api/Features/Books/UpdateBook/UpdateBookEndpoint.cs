@@ -1,7 +1,6 @@
 ﻿namespace Catalog.Api.Features.Books.UpdateBook;
 
 public record UpdateBookRequest(
-    Guid Id, 
     string Title, 
     string Description, 
     decimal Price, 
@@ -15,9 +14,10 @@ public class UpdateBookEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPut("/books", async (UpdateBookRequest request, ISender sender) =>
+        app.MapPut("/books/{id}", async (Guid id, UpdateBookRequest request, ISender sender) =>
         {
             var command = request.Adapt<UpdateBookCommand>();
+            command= command with { Id = id };
             var result = await sender.Send(command);
             var response = result.Adapt<UpdateBookResponse>();
             return Results.Ok(response);
