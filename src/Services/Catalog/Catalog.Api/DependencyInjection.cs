@@ -1,4 +1,5 @@
 ﻿using BuildingBlocks.Behaviors;
+using BuildingBlocks.Exceptions.Handler;
 using BuildingBlocks.Messaging.MassTransit;
 using System.Reflection;
 
@@ -12,8 +13,8 @@ public static class DependencyInjection
             .AddCarter()
             .AddMediator()
             .AddDatabase(configuration)
+            .AddCustomExceptionHandling()
             .AddMessageBroker(configuration, Assembly.GetExecutingAssembly());
-
     }
 
     private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
@@ -29,17 +30,20 @@ public static class DependencyInjection
             {
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+                cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
             })
         .AddValidatorsFromAssembly(typeof(Program).Assembly);
     }
 
+    private static IServiceCollection AddCustomExceptionHandling(this IServiceCollection services)
+    {
+        return services.AddExceptionHandler<CustomExceptionHandler>();
+    }
 
     public static WebApplication UseCatalogApi(this WebApplication app)
     {
         app.MapCarter();
+        app.UseExceptionHandler(_ => { });
         return app;
     }
-
-
-
 }

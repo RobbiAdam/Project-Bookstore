@@ -21,9 +21,8 @@ public class GetBookByIdQueryHandler(
 
 
         if (book is null)
-        {
-            throw new NullReferenceException("Book not found");
-        }
+            throw new NotFoundException(nameof(Book), query.Id);
+            
 
         var bookDto = book.Adapt<BookDto>();
 

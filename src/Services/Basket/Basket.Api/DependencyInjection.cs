@@ -1,4 +1,5 @@
 ﻿using BuildingBlocks.Behaviors;
+using BuildingBlocks.Exceptions.Handler;
 using BuildingBlocks.Messaging.MassTransit;
 using System.Reflection;
 
@@ -13,7 +14,8 @@ public static class DependencyInjection
             .AddMediator()
             .AddDatabase(configuration)
             .AddMessageBroker(configuration, Assembly.GetExecutingAssembly())
-            .AddServices();
+            .AddServices()
+            .AddExceptionHandling();
     }
 
     private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
@@ -29,6 +31,7 @@ public static class DependencyInjection
             {
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
             })
         .AddValidatorsFromAssembly(typeof(Program).Assembly);
     }
@@ -38,10 +41,16 @@ public static class DependencyInjection
         return services
             .AddScoped<IBasketService, BasketService>();
     }
+    
+    private static IServiceCollection AddExceptionHandling(this IServiceCollection services)
+    {
+        return services.AddExceptionHandler<CustomExceptionHandler>();
+    }
 
     public static WebApplication UseBasketApi(this WebApplication app)
     {
         app.MapCarter();
+        app.UseExceptionHandler(_ => { });
         return app;
     }
 }
